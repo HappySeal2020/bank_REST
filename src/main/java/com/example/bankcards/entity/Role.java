@@ -2,11 +2,16 @@ package com.example.bankcards.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 
-public enum Role  {
+public enum Role implements GrantedAuthority {
     ADMIN,
     USER;
-    //@Override
+    @Override
     public String getAuthority() {
         return "ROLE_"+ name().toUpperCase();
     }
+
+    public String getRole() {
+        return name().toUpperCase();
+    }
+
 }

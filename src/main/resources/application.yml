@@ -15,9 +15,19 @@ spring:
 
 server:
   port: 8080
+  servlet:
+    context-path: /bank-rest
 
 logging:
   level:
-    org.springframework: INFO
-    root: INFO
-    springfox: INFO
+    org:
+      springframework:
+        root: INFO
+        springfox: INFO
+        security: DEBUG
+
+
+
+app:
+  crypto:
+    secret-key: u7dB3iYKDyNKNDY7HK0Rq4Yu9fo6FD0xDVjDmSeVj2c=
