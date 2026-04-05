@@ -13,6 +13,9 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  liquibase:
+    change-log: classpath:/db/migration/db.changelog-master.yaml
+
 server:
   port: 8080
   servlet:

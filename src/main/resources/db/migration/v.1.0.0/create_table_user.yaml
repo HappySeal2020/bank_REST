@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-user_tbl
+      author: Zdanovskih
+      changes:
+      - createTable:
+          tableName: user_tbl
+          columns:
+            - column:
+                name: id
+                type: bigint
+                autoIncrement: true
+                constraints:
+                  nullable: false
+                  primaryKey: true
+            - column:
+                name: login
+                type: varchar(45)
+                constraints:
+                  nullable: false
+            - column:
+                name: password
+                type: varchar(260)
+                constraints:
+                  nullable: false
+            - column:
+                name: role
+                type: varchar(10)
+                constraints:
+                  nullable: false

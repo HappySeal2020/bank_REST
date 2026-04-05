@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: load-test-users
+      author: Zdanovskih
+      changes:
+        - loadData:
+            file: db/migration/data/user_tbl.csv
+            tableName: user_tbl
+            separator: ";"
+            encoding: UTF-8

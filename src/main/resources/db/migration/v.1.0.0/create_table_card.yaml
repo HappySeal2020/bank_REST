@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-table-card
+      author: Zdanovskih
+      changes:
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: card_card_id_user_id
+                    references: user_tbl(id)
+              - column:
+                  name: card_num
+                  type: varchar(300)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: owner
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: valid_thru
+                  type: date
+                  constraints:
+                    nullable: false
+              - column:
+                  name: current_status
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: requested_status
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: balance
+                  type: numeric
+                  constraints:
+                    nullable: false

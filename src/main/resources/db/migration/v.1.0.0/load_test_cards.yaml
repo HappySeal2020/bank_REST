@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: load-test-cards
+      author: Zdanovskih
+      changes:
+        - loadData:
+            file: db/migration/data/card.csv
+            tableName: card
+            separator: ";"
+            encoding: UTF-8
