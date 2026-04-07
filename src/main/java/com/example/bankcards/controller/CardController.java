@@ -7,6 +7,7 @@ import com.example.bankcards.service.CardService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -24,7 +25,8 @@ public class CardController {
         this.cardService = cardService;
     }
 
-    //test only
+    @PreAuthorize("hasRole('ADMIN')")
+    //Read all cards
     @GetMapping(REST_CARD)
     @ResponseStatus(HttpStatus.OK)
     public List<AdminCardDto> getCards() {
@@ -32,6 +34,7 @@ public class CardController {
     }
 
     //Card CRUD for admin
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(REST_CARD)
     @ResponseStatus(HttpStatus.CREATED)
     public Card createCard(@Valid @RequestBody Card card) {
@@ -40,6 +43,7 @@ public class CardController {
         return cardService.save(card, true);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(REST_CARD+"/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public Card updateCard(@PathVariable Long id, @Valid @RequestBody Card card) {
@@ -52,6 +56,7 @@ public class CardController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(REST_CARD+"/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCard(@PathVariable long id) {
@@ -60,11 +65,14 @@ public class CardController {
     }
 
 //Card status for admin
+@PreAuthorize("hasRole('ADMIN')")
 @GetMapping(REST_CARD_STATUS)
 @ResponseStatus(HttpStatus.OK)
 public List<Card> getCardsByStatus() {
     return cardService.getMismatchStatusCard();
 }
+
+@PreAuthorize("hasRole('ADMIN')")
 @PutMapping(REST_CARD_STATUS+"/{id}")
 @ResponseStatus(HttpStatus.ACCEPTED)
 public void updateCardStatus(@PathVariable long id, @RequestParam String action) {

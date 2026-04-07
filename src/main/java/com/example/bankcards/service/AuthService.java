@@ -18,7 +18,11 @@ public class AuthService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
         var userInDb = userRepository.findByLogin(username);
+        if (userInDb == null) {
+            throw new UsernameNotFoundException("User not found " + username);
+        }
         log.info("username: {}, user in db role: {}", username, userInDb.getRole());
         return User.withUsername(userInDb.getLogin())
                 .password(userInDb.getPassword())
