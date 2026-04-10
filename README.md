@@ -1,105 +1,59 @@
-<h1>🚀 Разработка Системы Управления Банковскими Картами</h1>
+<h1>Учебный проект "Система управления банковскими картами"</h1>
 
-<h2>📁 Стартовая структура</h2>
-  <p>
-    Проектная структура с директориями и описательными файлами (<code>README Controller.md</code>, <code>README Service.md</code> и т.д.) уже подготовлена.<br />
-    Все реализации нужно добавлять <strong>в соответствующие директории</strong>.
-  </p>
-  <p>
-    После завершения разработки <strong>временные README-файлы нужно удалить</strong>, чтобы они не попадали в итоговую сборку.
-  </p>
-  
-<h2>📝 Описание задачи</h2>
-  <p>Разработать backend-приложение на Java (Spring Boot) для управления банковскими картами:</p>
-  <ul>
-    <li>Создание и управление картами</li>
-    <li>Просмотр карт</li>
-    <li>Переводы между своими картами</li>
-  </ul>
 
-<h2>💳 Атрибуты карты</h2>
-  <ul>
-    <li>Номер карты (зашифрован, отображается маской: <code>**** **** **** 1234</code>)</li>
-    <li>Владелец</li>
-    <li>Срок действия</li>
-    <li>Статус: Активна, Заблокирована, Истек срок</li>
-    <li>Баланс</li>
-  </ul>
+1. Описание
+2. Technologies
+3. How to run
+4. Services
+5. Endpoints
 
-<h2>🧾 Требования</h2>
+## 1. Описание
+Система позволяет через REST-запросы выполнять операции:
+- CRUD пользователей;
+- CRUD карт;
+- блокировка/разблокировка карт;
+- изменение баланса карт;
+- перевод между своими картами;
+- предусмотрены роли: ADMIN и USER.
 
-<h3>✅ Аутентификация и авторизация</h3>
-  <ul>
-    <li>Spring Security + JWT</li>
-    <li>Роли: <code>ADMIN</code> и <code>USER</code></li>
-  </ul>
+Для хранения данных используется PostgreSQL.
 
-<h3>✅ Возможности</h3>
-<strong>Администратор:</strong>
-  <ul>
-    <li>Создаёт, блокирует, активирует, удаляет карты</li>
-    <li>Управляет пользователями</li>
-    <li>Видит все карты</li>
-  </ul>
+## 2. Technologies
+Java 21  
+Spring Boot 3  
+Spring Data JPA  
+PostgreSQL  
+Liquibase  
+Docker  
+JUnit 5
 
-<strong>Пользователь:</strong>
-  <ul>
-    <li>Просматривает свои карты (поиск + пагинация)</li>
-    <li>Запрашивает блокировку карты</li>
-    <li>Делает переводы между своими картами</li>
-    <li>Смотрит баланс</li>
-  </ul>
+## 3. How to run
+git clone git@github.com:HappySeal2020/bank_REST.git  
+cd bank_rest-main  
+docker compose up -d  
+mvn clean install  
 
-<h3>✅ API</h3>
-  <ul>
-    <li>CRUD для карт</li>
-    <li>Переводы между своими картами</li>
-    <li>Фильтрация и постраничная выдача</li>
-    <li>Валидация и сообщения об ошибках</li>
-  </ul>
+## 4. Services
+application http://localhost:8080  
+Postgres localhost:5432
 
-<h3>✅ Безопасность</h3>
-  <ul>
-    <li>Шифрование данных</li>
-    <li>Ролевой доступ</li>
-    <li>Маскирование номеров карт</li>
-  </ul>
-
-<h3>✅ Работа с БД</h3>
-  <ul>
-    <li>PostgreSQL или MySQL</li>
-    <li>Миграции через Liquibase (<code>src/main/resources/db/migration</code>)</li>
-  </ul>
-
-<h3>✅ Документация</h3>
-  <ul>
-    <li>Swagger UI / OpenAPI — <code>docs/openapi.yaml</code></li>
-    <li><code>README.md</code> с инструкцией запуска</li>
-  </ul>
-
-<h3>✅ Развёртывание и тестирование</h3>
-  <ul>
-    <li>Docker Compose для dev-среды</li>
-    <li>Liquibase миграции</li>
-    <li>Юнит-тесты ключевой бизнес-логики</li>
-  </ul>
-
-<h2>📊 Оценка</h2>
-  <ul>
-    <li>Соответствие требованиям</li>
-    <li>Чистота архитектуры и кода</li>
-    <li>Безопасность</li>
-    <li>Обработка ошибок</li>
-    <li>Покрытие тестами</li>
-    <li>ООП и уровни абстракции</li>
-  </ul>
-
-<h2>💡 Технологии</h2>
-  <p>
-    Java 17+, Spring Boot, Spring Security, Spring Data JPA, PostgreSQL/MySQL, Liquibase, Docker, JWT, Swagger (OpenAPI)
-  </p>
-
-<h2> 📤 Формат сдачи</h2>
-<p>
-Весь код и изменения принимаются только через git-репозиторий с открытым доступом к проекту. Отправка файлов в любом виде не принимается.
-  </p>
+## 5. Endpoints
+| N  | Адрес                                                        | Метод  | Параметры                                                                                                                                                                             | Роль  | Описание                                                                                                                                                                                                       |
+|----|--------------------------------------------------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 1  | http://localhost:8080/bank-rest/auth/login                   | POST   | {"login": "admin", "password": "admin"}                                                                                                                                               | любая | получение JWT access токен                                                                                                                                                                                     |
+| 2  | http://localhost:8080/bank-rest/auth/refresh                 | POST   |                                                                                                                                                                                       | любая | получение JWT refresh токен                                                                                                                                                                                    |
+| 3  | http://localhost:8080/bank-rest/api-1.0/users                | GET    | ?page=0&size=10&login=nikolay                                                                                                                                                         | ADMIN | Просмотр пользователей: page-номер страницы, size-размер страницы, login-имя пользователя. Все параметры - необязательные.                                                                                     |
+| 4  | http://localhost:8080/bank-rest/api-1.0/users                | POST   | {"id": 0, "login": "new-user", "password": "new-user", "role": "USER" }                                                                                                               | ADMIN | Добавление пользователя                                                                                                                                                                                        |
+| 5  | http://localhost:8080/bank-rest/api-1.0/users/id             | PUT    | {"id": id, "login": "new-user", "password": "new-user", "role": "USER" }                                                                                                              | ADMIN | Изменение пользователя с номером id.                                                                                                                                                                           |
+| 6  | http://localhost:8080/bank-rest/api-1.0/users/id             | DELETE |                                                                                                                                                                                       | ADMIN | Удаление пользователя с номером id (возможно только при отсутствии у пользователя карт).                                                                                                                       |
+| 7  | http://localhost:8080/bank-rest/api-1.0/cards                | GET    | ?page=0&size=10&card=1234&owner=olga&login=olga                                                                                                                                       | ADMIN | Просмотр всех карт: page-номер страницы, size-размер страницы, card-последние 4 символа номера карты, owner-эмбоссированное на карту имя пользователя, login-имя пользователя. Все параметры - необязательные. |
+| 8  | http://localhost:8080/bank-rest/api-1.0/cards                | POST   | { "user": { "id": 4}, "cardNum": "1111222233334444", "owner": "MRS OLGA", "validThru": "2035-12-23", "currentStatus": "ACTIVE", "requestedStatus": "ACTIVE", "balance": 0 }           | ADMIN | Добавление карты пользователю. Пользователь должен существовать.                                                                                                                                               |
+| 9  | http://localhost:8080/bank-rest/api-1.0/cards/id             | PUT    | { "id": id, "user": { "id": 4}, "cardNum": "1111222233334444", "owner": "MRS OLGA", "validThru": "2035-12-23", "currentStatus": "ACTIVE", "requestedStatus": "ACTIVE", "balance": 0 } | ADMIN | Изменение карты пользователя с внутренним номером id.                                                                                                                                                          |
+| 10 | http://localhost:8080/bank-rest/api-1.0/cards/id             | DELETE |                                                                                                                                                                                       | ADMIN | Удаление карты с внутренним номером id.                                                                                                                                                                        |
+| 11 | http://localhost:8080/bank-rest/api-1.0/cards/status         | GET    |                                                                                                                                                                                       | ADMIN | Просмотр заявок на блокировку/разблокировку                                                                                                                                                                    |
+| 12 | http://localhost:8080/bank-rest/api-1.0/cards/status         | PUT    | /id?action=lock                                                                                                                                                                       | ADMIN | Изменение статуса карты по заявке. id - внутренний номер карты.                                                                                                                                                |
+| 13 | http://localhost:8080/bank-rest/api-1.0/client               | GET    | ?page=0&size=6&card=1234                                                                                                                                                              | USER  | Просмотр клиентом своих карт + суммарный баланс по всем картам. card-поиск по последним четырём символам номера карты. Все параметры - необязательные.                                                         |
+| 14 | http://localhost:8080/bank-rest/api-1.0/client/cardstatus    | PUT    | /id?action=lock                                                                                                                                                                       | USER  | Заявка на блокировку карты. id - внутренний номер карты.                                                                                                                                                       |
+| 15 | http://localhost:8080/bank-rest/api-1.0/client/changebalance | PUT    | ?src=id&&amount=380                                                                                                                                                                   | USER  | Пополнение или списание с карты id суммы (380).                                                                                                                                                                |
+| 16 | http://localhost:8080/bank-rest/api-1.0/client/transfer      | PUT    | ?src=39&&dest=40&&amount=100                                                                                                                                                          | USER  | Перевод с карты 39 на карту 40 суммы 100.                                                                                                                                                                      |
+| 17 | http://localhost:8080/bank-rest/swagger-ui/index.html        |        |                                                                                                                                                                                       | любая | Swagger                                                                                                                                                                                                        |

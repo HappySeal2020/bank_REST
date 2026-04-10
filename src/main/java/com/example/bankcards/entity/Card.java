@@ -22,6 +22,8 @@ public class Card {
     @NotEmpty
     @Column(name = "card_num")
     private String cardNum;
+    @Column(name = "card_num4")
+    private String cardNum4;
     @NotBlank
     @NotEmpty
     @Column(name = "owner")

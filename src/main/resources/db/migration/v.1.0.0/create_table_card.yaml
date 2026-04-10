@@ -27,6 +27,12 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: card_num4
+                  type: varchar(5)
+                  constraints:
+                    nullable: false
+
+              - column:
                   name: owner
                   type: varchar(30)
                   constraints:

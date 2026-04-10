@@ -22,6 +22,7 @@ public class CardMapper {
         return new AdminCardDto(card.getId(),
                 card.getUser(),
                 masked,
+                card.getCardNum4(),
                 card.getOwner(),
                 card.getValidThru(),
                 card.getCurrentStatus(),
@@ -35,6 +36,7 @@ public class CardMapper {
         String masked = maskingService.maskCardNumber(decrypted);
         return new UserCardDto(card.getId(),
                 masked,
+                card.getCardNum4(),
                 card.getOwner(),
                 card.getValidThru(),
                 card.getCurrentStatus(),

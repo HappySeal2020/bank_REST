@@ -14,6 +14,8 @@ public class AdminCardDto {
     private final User user;
     @JsonProperty("card_num")
     private final String cardNum;
+    @JsonProperty("card_num4")
+    private final String cardNum4;
     @JsonProperty("owner")
     private final String owner;
     @JsonProperty("valid_thru")
@@ -25,11 +27,12 @@ public class AdminCardDto {
     @JsonProperty("balance")
     private final BigDecimal balance;
 
-    public AdminCardDto(long id, User user, String cardNum, String owner, LocalDate validThru, CardStatus currentStatus,
+    public AdminCardDto(long id, User user, String cardNum, String cardNum4, String owner, LocalDate validThru, CardStatus currentStatus,
                         CardStatus requestedStatus, BigDecimal balance) {
         this.id = id;
         this.user = user;
         this.cardNum = cardNum;
+        this.cardNum4 = cardNum4;
         this.owner = owner;
         this.validThru = validThru;
         this.currentStatus = currentStatus;

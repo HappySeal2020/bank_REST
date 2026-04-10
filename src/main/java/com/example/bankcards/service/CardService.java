@@ -3,6 +3,7 @@ package com.example.bankcards.service;
 import com.example.bankcards.dto.AdminCardDto;
 import com.example.bankcards.dto.UserCardDto;
 import com.example.bankcards.dto.UserCardResponseDto;
+import com.example.bankcards.dto.specification.CardSpecification;
 import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.CardMapper;
 import com.example.bankcards.entity.CardStatus;
@@ -12,6 +13,10 @@ import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -35,15 +40,14 @@ public class CardService {
 
     //READ
     public Card getById(Long id) {
-
         return cardRepository.findById(id)
-                .map(c -> {
-                    String encrypted = c.getCardNum();
-                    String decrypted= aesService.decrypt(encrypted);
-                    String masked = maskingService.maskCardNumber(decrypted);
-                    c.setCardNum(masked);
-                return c;
-                })
+                //.map(c -> {
+                //    String encrypted = c.getCardNum();
+                //    String decrypted= aesService.decrypt(encrypted);
+                //    String masked = maskingService.maskCardNumber(decrypted);
+                    //c.setCardNum(masked);
+                //return c;
+                //})
                 .orElseThrow(() ->
                         new NotFoundException("Card not found id=" + id));
     }
@@ -54,25 +58,36 @@ public class CardService {
                 .orElseThrow(() -> new NotFoundException("Card not found id="+id));
     }
 
-    public List<AdminCardDto> getAllCards() {
-        List<Card> cards = cardRepository.findAll();
-        return cards.stream()
-                .map(cardMapper::toDto)
-                .toList();
+     public List<AdminCardDto> getCards(int page, int size, String card, String owner, String login) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
+        Page<Card>cardsPage;
+        if ((card != null && !card.isBlank()) ||
+        (owner != null && !owner.isBlank()) ||
+        (login != null && !login.isBlank())) {
+            cardsPage=cardRepository.findAll(CardSpecification.filter(card, owner, login), pageable);
+        } else {
+            cardsPage=cardRepository.findAll(pageable);
+        }
+        return cardsPage.map(cardMapper::toDto).getContent();
     }
 
     //Clients
 
-    //User cards + balance
-    public UserCardResponseDto getUserCard() {
-        String login=getUsername();
-        List<Card> cards = cardRepository.findOwnCards(login);
-        log.info("Cards owned by {} - {}",login , cards);
-        List<UserCardDto> dtos = cards.stream()
+    public UserCardResponseDto getUserCard(int page, int size, String card) {
+        String login = getUsername();
+        log.info("Try to get user cards for login {} - page {}, page size {}, card {}", login, page, size, card);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
+        Page<Card> pageResult;
+        if (card != null && !card.isBlank()) {
+            pageResult = cardRepository.findAll(CardSpecification.filter(card, null, login), pageable);
+        } else {
+            pageResult = cardRepository.findByUserLogin(login, pageable);
+        }
+        List<UserCardDto> dtos = pageResult.stream()
                 .map(cardMapper::toUserCardDto)
                 .toList();
         BigDecimal total = cardRepository.getTotalBalance(login);
-        if (total == null) { total = new BigDecimal(0); }
+        if (total == null) total = BigDecimal.ZERO;
         return new UserCardResponseDto(dtos, total);
     }
 
@@ -139,7 +154,7 @@ public class CardService {
             default:
                 throw new RuntimeException(String.format("Change card status - unknown action: %s", action));
         }
-        cardRepository.save(card);
+        save(card, false);
     }
 
 
@@ -156,6 +171,7 @@ public class CardService {
             //Card valid up to last day of month
             card.setValidThru(card.getValidThru().with(TemporalAdjusters.lastDayOfMonth()));
             if (doEncrypt) {
+                card.setCardNum4(card.getCardNum().substring(card.getCardNum().length() - 4));
                 String cardNum=card.getCardNum();
                 card.setCardNum(aesService.encrypt(cardNum));
             }
@@ -209,7 +225,7 @@ public class CardService {
                 log.warn("Update card status - unknown action: {}", action);
                 throw new RuntimeException(String.format("Change card status - unknown action: %s", action));
         }
-        cardRepository.save(card);
+        save(card,false);
     }
 
     public String getUsername() {

@@ -34,3 +34,5 @@ logging:
 app:
   crypto:
     secret-key: u7dB3iYKDyNKNDY7HK0Rq4Yu9fo6FD0xDVjDmSeVj2c=
+    access-secret: access-secret-key-very-long-1234567890
+    refresh-secret: refresh-secret-key-very-long-1234567890

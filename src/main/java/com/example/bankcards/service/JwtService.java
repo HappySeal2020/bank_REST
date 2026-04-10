@@ -1,4 +1,4 @@
-package com.example.bankcards.security;
+package com.example.bankcards.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,18 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
 public class JwtService {
-
-    private final String ACCESS_SECRET = "access-secret-key-very-long-1234567890";
-    private final String REFRESH_SECRET = "refresh-secret-key-very-long-1234567890";
+    private final String ACCESS_SECRET;
+    private final String REFRESH_SECRET;
+    public JwtService(@Value ("${app.crypto.access-secret}") String acc,
+                      @Value("${app.crypto.refresh-secret}") String ref){
+        this.ACCESS_SECRET = acc;
+        this.REFRESH_SECRET = ref;
+    }
 
     private String generateToken(UserDetails user, long expiration, String secret, String type) {
 
@@ -31,7 +37,8 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("roles", roles)
-                .claim("type", type) // 👈 ВАЖНО
+                .claim("type", type)
+                .claim("jti", UUID.randomUUID().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignKey(secret), SignatureAlgorithm.HS256)
@@ -95,5 +102,9 @@ public class JwtService {
     public List<String> extractRoles(String token) {
         Claims claims = getClaims(token);
         return claims.get("roles", List.class);
+    }
+
+    public String extractJti(String token) {
+        return getClaims(token, REFRESH_SECRET).get("jti", String.class);
     }
 }

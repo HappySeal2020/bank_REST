@@ -1,5 +1,8 @@
 package com.example.bankcards.security;
 
+import com.example.bankcards.service.JwtService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -63,8 +66,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        } catch (Exception e) {
+        //} catch (Exception e) {
+          } catch (ExpiredJwtException e) {
+            request.setAttribute("jwt_error","Token expired");
             log.warn("JWT error: {}", e.getMessage());
+        } catch (JwtException e) {
+            request.setAttribute("jwt_error", "Invalid token");
         }
         filterChain.doFilter(request, response);
     }

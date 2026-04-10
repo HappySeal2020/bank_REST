@@ -4,8 +4,11 @@ public final class Const {
     //common path
     public static final String REST_MAP = "/api-1.0";
 
-    //jwt login
+    //security
+    public static final String AUTH_PATH = "/auth";
+
     public static final String REST_LOGIN = "/login";
+    public static final String REST_REFRESH = "/refresh";
 
     //paths for Admin
     public static final String REST_CARD = "/cards";

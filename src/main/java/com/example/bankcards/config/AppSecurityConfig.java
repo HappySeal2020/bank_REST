@@ -1,6 +1,8 @@
 package com.example.bankcards.config;
 
 import com.example.bankcards.entity.Role;
+import com.example.bankcards.exception.JwtAccessDeniedHandler;
+import com.example.bankcards.exception.JwtAuthenticationEntryPoint;
 import com.example.bankcards.security.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +21,8 @@ import static com.example.bankcards.util.Const.*;
 @Configuration
 @EnableMethodSecurity
 public class AppSecurityConfig {
-
+    JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    JwtAccessDeniedHandler jwtAccessDeniedHandler;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -28,11 +31,16 @@ public class AppSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
         http
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(jwtAccessDeniedHandler)
+                )
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         //login
-                        .requestMatchers("/auth"+REST_LOGIN).permitAll()
+                        .requestMatchers(AUTH_PATH+REST_LOGIN).permitAll()
+                        .requestMatchers(AUTH_PATH+REST_REFRESH).permitAll()
 
                         // ADMIN
                         .requestMatchers(REST_MAP + REST_CARD + "/**")

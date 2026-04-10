@@ -27,11 +27,14 @@ public class UserController {
     }
 
 
-    //test only
+    //View users + filter + pagination
     @GetMapping(REST_USER)
     @ResponseStatus(HttpStatus.OK)
-    public List<User> getCards() {
-        return userRepository.findAll();
+    public List<User> getUsers(@RequestParam(defaultValue = "0") int page, //page number
+                               @RequestParam(defaultValue = "5") int size, //page size
+                               @RequestParam(required = false) String login //find by
+                               ) {
+        return userService.getAllUsers(page, size, login);
     }
 
     @PostMapping(REST_USER)
@@ -46,7 +49,7 @@ public class UserController {
     public User updateUser(@PathVariable Long id, @RequestBody User user) {
         if (id.equals(user.getId() )) {
             log.info("Updating user with id {}", id);
-            return userRepository.save(user);
+            return userService.save(user);
         }else{
             log.error("Try to update User with incorrect id {}", id);
             throw badRequest(new InputMismatchException("Incorrect id"));
