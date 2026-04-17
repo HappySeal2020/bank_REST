@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, Long>, JpaSpecificationExecutor<Card> {
@@ -26,4 +27,5 @@ public interface CardRepository extends JpaRepository<Card, Long>, JpaSpecificat
 
     Page<Card> findByUserLogin(String login, Pageable pageable);
 
+    Optional<Card> findByIdAndUserLogin(Long id, String login);
 }

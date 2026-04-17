@@ -1,31 +1,35 @@
 package com.example.bankcards.dto;
 
 import com.example.bankcards.entity.CardStatus;
-import com.example.bankcards.entity.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@Schema(description="Банковская карта для клиента")
 public class UserCardDto {
     @JsonProperty("id")
-    private final long id;
-    //@JsonProperty("user_id")
-    //private final User user;
+    private long id;
     @JsonProperty("card_num")
-    private final String cardNum;
+    private String cardNum;
     @JsonProperty("card_num4")
-    private final String cardNum4;
+    private String cardNum4;
     @JsonProperty("owner")
-    private final String owner;
+    private String owner;
     @JsonProperty("valid_thru")
-    private final LocalDate validThru;
+    private LocalDate validThru;
     @JsonProperty("current_status")
-    private final CardStatus currentStatus;
+    private CardStatus currentStatus;
     @JsonProperty("requested_status")
-    private final CardStatus requestedStatus;
+    private CardStatus requestedStatus;
     @JsonProperty("balance")
-    private final BigDecimal balance;
+    private BigDecimal balance;
 
     public UserCardDto(long id, String cardNum, String cardNum4, String owner, LocalDate validThru, CardStatus currentStatus,
                        CardStatus requestedStatus, BigDecimal balance) {
@@ -37,7 +41,7 @@ public class UserCardDto {
         this.currentStatus = currentStatus;
         this.requestedStatus = requestedStatus;
         this.balance = balance;
-
     }
+
 
 }

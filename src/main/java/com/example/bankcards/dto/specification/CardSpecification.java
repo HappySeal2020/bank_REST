@@ -4,8 +4,7 @@ import com.example.bankcards.entity.Card;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -18,6 +17,7 @@ public static Specification<Card> filter (String cardNum,
 
     return (root, query, cb) -> {
         List<Predicate> predicates = new ArrayList<>();
+        assert query != null;
         query.distinct(true);
         if (cardNum != null) {
             predicates.add(cb.like(cb.lower(root.get("cardNum4")),

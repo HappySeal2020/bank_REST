@@ -1,5 +1,6 @@
 package com.example.bankcards.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +16,7 @@ import org.hibernate.validator.constraints.Length;
 @Entity
 @ToString
 
+@Schema(description="Пользователь системы")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +33,6 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private Role role;
 
-    //@OneToMany(mappedBy = "user")
-    //private List<Card> cards;
 
 }
 

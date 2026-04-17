@@ -36,26 +36,20 @@ public class CardService {
     private final UserRepository userRepository;
     private final CardMapper cardMapper;
     private final AesService aesService;
-    private final MaskingService maskingService;
+    //private final MaskingService maskingService;
 
     //READ
     public Card getById(Long id) {
         return cardRepository.findById(id)
-                //.map(c -> {
-                //    String encrypted = c.getCardNum();
-                //    String decrypted= aesService.decrypt(encrypted);
-                //    String masked = maskingService.maskCardNumber(decrypted);
-                    //c.setCardNum(masked);
-                //return c;
-                //})
                 .orElseThrow(() ->
                         new NotFoundException("Card not found id=" + id));
     }
-    public Card getOwnCardById(Long id) {
-        return cardRepository.findOwnCards(getUsername()).stream()
-                .filter(c-> c.getId() ==id)
-                .findAny()
-                .orElseThrow(() -> new NotFoundException("Card not found id="+id));
+
+    public Card getOwnCardById(Long id){
+        String username=getUsername();
+        log.info("getOwnCardById: username={}, card id={}",username, id);
+        return cardRepository.findByIdAndUserLogin(id, username)
+                .orElseThrow(() -> new NotFoundException("Card not found id=" + id));
     }
 
      public List<AdminCardDto> getCards(int page, int size, String card, String owner, String login) {
@@ -128,8 +122,10 @@ public class CardService {
     }
 
     //Client Lock/UnLock requests
+
     @Transactional
     public void clientUpdateCardStatus (long id, String action) {
+        log.info("Call getOwnCardById id={}", id);
         Card card = getOwnCardById(id);
         String msg="Requested card status "+action +" NOT changed due to wrong status "+card;
         switch (action.toUpperCase()) {

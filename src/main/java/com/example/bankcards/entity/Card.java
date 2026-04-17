@@ -1,8 +1,10 @@
 package com.example.bankcards.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,7 +12,9 @@ import java.time.LocalDate;
 
 @Data
 @Entity
+
 @Table(name="card")
+@Schema(description="Банковская карта")
 public class Card {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -20,16 +24,18 @@ public class Card {
     private User user;
     @NotBlank
     @NotEmpty
+    @NotNull
     @Column(name = "card_num")
     private String cardNum;
     @Column(name = "card_num4")
     private String cardNum4;
     @NotBlank
     @NotEmpty
+    @NotNull
     @Column(name = "owner")
     private String owner;
     //@NotBlank
-    //@NotEmpty
+    @NotNull
     @Column(name = "valid_thru")
     private LocalDate validThru;
     //@NotBlank

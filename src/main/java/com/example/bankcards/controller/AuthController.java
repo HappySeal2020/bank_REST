@@ -5,6 +5,7 @@ import com.example.bankcards.dto.AuthResponseDto;
 import com.example.bankcards.exception.JwtAuthenticationException;
 import com.example.bankcards.service.JwtService;
 import com.example.bankcards.security.RefreshTokenStore;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 
 import static com.example.bankcards.util.Const.*;
 
@@ -43,6 +43,7 @@ public class AuthController {
         this.refreshTokenStore = refreshTokenStore;
     }
 
+    @Operation(summary="Аутентификация пользователя, Access token")
     @PostMapping(REST_LOGIN)
     public ResponseEntity<?> login(@RequestBody AuthRequestDto request,
                                    HttpServletResponse response) {
@@ -78,18 +79,13 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary="Аутентификация пользователя, Refresh token")
     @PostMapping(REST_REFRESH)
     //public AuthResponseDto refresh(@RequestBody Map<String, String> request)
     public AuthResponseDto refresh(HttpServletRequest request,
                                    HttpServletResponse response) {
-        String refreshToken = getCookie(request, "refreshToken");//null;
-        /*if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    refreshToken = cookie.getValue();
-                }
-            }
-        }*/
+        String refreshToken = getCookie(request, "refreshToken");
+
         if (refreshToken == null) {
             throw new RuntimeException("Refresh token not found");
         }
@@ -103,7 +99,6 @@ public class AuthController {
 
         // проверка rotation
         if (!refreshTokenStore.isValid(username, jti)) {
-            //throw new RuntimeException("Refresh token reused or stolen");
             throw new JwtAuthenticationException("Refresh token reused");
         }
 

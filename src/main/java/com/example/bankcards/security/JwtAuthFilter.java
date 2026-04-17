@@ -18,7 +18,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,6 +38,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
         String token = null;
+
         // 1. Пробуем header
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -52,8 +55,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         try {
             String username = jwtService.extractUsername(token);
+
+            String tokenType = jwtService.extractTokenType(token);
+            if (!"access".equals(tokenType)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                List<String> roles = jwtService.extractRoles(token);
+                List<String> roles = Optional
+                        .ofNullable(jwtService.extractRoles(token))
+                        .orElse(Collections.emptyList());
+
                 List<GrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
@@ -66,12 +79,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
-        //} catch (Exception e) {
           } catch (ExpiredJwtException e) {
             request.setAttribute("jwt_error","Token expired");
             log.warn("JWT error: {}", e.getMessage());
         } catch (JwtException e) {
-            request.setAttribute("jwt_error", "Invalid token");
+            //request.setAttribute("jwt_error", "Invalid token");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
         }
         filterChain.doFilter(request, response);
     }
@@ -85,5 +99,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+
+
+
 
 }

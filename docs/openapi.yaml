@@ -1,1 +1,542 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost
+  description: Generated server url
+paths:
+  /api-1.0/users/{id}:
+    put:
+      tags:
+      - user-controller
+      summary: Админ изменяет пользователя.
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "202":
+          description: Accepted
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      tags:
+      - user-controller
+      summary: Админ удаляет пользователя.
+      operationId: deleteUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No Content
+  /api-1.0/client/transfer:
+    put:
+      tags:
+      - card-controller
+      summary: Клиент делает перевод между своими картами
+      operationId: clientMoneyTransfer
+      parameters:
+      - name: src
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: dest
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: amount
+        in: query
+        required: true
+        schema:
+          type: number
+      responses:
+        "202":
+          description: Accepted
+          content:
+            '*/*':
+              schema:
+                type: number
+  /api-1.0/client/changebalance:
+    put:
+      tags:
+      - card-controller
+      summary: Клиент увеличивает или уменьшает баланс своей карты.
+      operationId: clientChangeBalance
+      parameters:
+      - name: src
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: amount
+        in: query
+        required: true
+        schema:
+          type: number
+      responses:
+        "202":
+          description: Accepted
+          content:
+            '*/*':
+              schema:
+                type: number
+  /api-1.0/client/cardstatus/{id}:
+    put:
+      tags:
+      - card-controller
+      summary: "Клиент делает заявку на блокировку, разблокировку своей карты."
+      operationId: setClientCardStatus
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: action
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+  /api-1.0/cards/{id}:
+    put:
+      tags:
+      - card-controller
+      summary: Админ изменяет карту
+      operationId: updateCard
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Card"
+        required: true
+      responses:
+        "202":
+          description: Accepted
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Card"
+    delete:
+      tags:
+      - card-controller
+      summary: Админ удаляет карту
+      operationId: deleteCard
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "204":
+          description: No Content
+  /api-1.0/cards/status/{id}:
+    put:
+      tags:
+      - card-controller
+      summary: "Админ выполняет блокировку, разблокировку карт"
+      operationId: updateCardStatus
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: action
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+  /auth/refresh:
+    post:
+      tags:
+      - auth-controller
+      summary: "Аутентификация пользователя, Refresh token"
+      operationId: refresh
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AuthResponseDto"
+  /auth/login:
+    post:
+      tags:
+      - auth-controller
+      summary: "Аутентификация пользователя, Access token"
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /api-1.0/users:
+    get:
+      tags:
+      - user-controller
+      summary: "Админ просматривает пользователей. Фильтр по login, пагинация."
+      operationId: getUsers
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 5
+      - name: login
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      tags:
+      - user-controller
+      summary: Админ создаёт пользователя.
+      operationId: addUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+  /api-1.0/cards:
+    get:
+      tags:
+      - card-controller
+      summary: "Админ читает все карты. Фильтр по последним 4 символам номера карт\
+        ы, по эмбоссированному на карте имени, по логину, пагинация."
+      operationId: getCards
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 5
+      - name: card
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: owner
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: login
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminCardDto"
+    post:
+      tags:
+      - card-controller
+      summary: Админ создаёт новую карту
+      operationId: createCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Card"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Card"
+  /api-1.0/client:
+    get:
+      tags:
+      - card-controller
+      summary: "Клиент смотрит свои карты + суммарный баланс. Фильтр по последним\
+        \ 4 символам номера карты, пагинация."
+      operationId: getCardsByClient
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 5
+      - name: card
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserCardResponseDto"
+  /api-1.0/cards/status:
+    get:
+      tags:
+      - card-controller
+      summary: "Админ получает список заявок на блокировку, разблокировку карт"
+      operationId: getCardsByStatus
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Card"
+components:
+  schemas:
+    User:
+      required:
+      - login
+      - password
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        login:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          description: Роль пользователя системы
+          enum:
+          - ADMIN
+          - USER
+      description: Пользователь системы
+    Card:
+      required:
+      - cardNum
+      - owner
+      - validThru
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user:
+          $ref: "#/components/schemas/User"
+        cardNum:
+          type: string
+        cardNum4:
+          type: string
+        owner:
+          type: string
+        validThru:
+          type: string
+          format: date
+        currentStatus:
+          type: string
+          description: Состояние банковской карты
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+          - BLOCK_REQUESTED
+        requestedStatus:
+          type: string
+          description: Состояние банковской карты
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+          - BLOCK_REQUESTED
+        balance:
+          type: number
+      description: Банковская карта
+    AuthResponseDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+    AuthRequestDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+    UserCardDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        card_num:
+          type: string
+        card_num4:
+          type: string
+        owner:
+          type: string
+        valid_thru:
+          type: string
+          format: date
+        current_status:
+          type: string
+          description: Состояние банковской карты
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+          - BLOCK_REQUESTED
+        requested_status:
+          type: string
+          description: Состояние банковской карты
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+          - BLOCK_REQUESTED
+        balance:
+          type: number
+      description: Банковская карта для клиента
+    UserCardResponseDto:
+      type: object
+      properties:
+        cards:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserCardDto"
+        totalBalance:
+          type: number
+      description: Банковская карта для клиента + суммарный баланс по всем картам
+    AdminCardDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          $ref: "#/components/schemas/User"
+        card_num:
+          type: string
+        card_num4:
+          type: string
+        owner:
+          type: string
+        valid_thru:
+          type: string
+          format: date
+        current_status:
+          type: string
+          description: Состояние банковской карты
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+          - BLOCK_REQUESTED
+        requested_status:
+          type: string
+          description: Состояние банковской карты
+          enum:
+          - ACTIVE
+          - BLOCKED
+          - EXPIRED
+          - BLOCK_REQUESTED
+        balance:
+          type: number
+      description: Банковская карта для Админ

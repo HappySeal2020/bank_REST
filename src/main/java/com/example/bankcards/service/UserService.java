@@ -1,7 +1,6 @@
 package com.example.bankcards.service;
 
 import com.example.bankcards.dto.specification.UserSpecification;
-import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,13 +35,6 @@ public User save(User user) {
     return userRepository.save(user);
 }
 
-    //READ
-    public User getById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() ->
-                        new NotFoundException("User not found id=" + id));
-    }
-
     public List<User> getAllUsers(int page, int size, String login) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
         Page<User> userPage;
@@ -52,6 +44,12 @@ public User save(User user) {
             userPage = userRepository.findAll(pageable);
         }
         return userPage.getContent();
+    }
+
+    public Long deleteById(Long id) {
+        log.info("Deleting user: {}", id);
+        userRepository.deleteById(id);
+        return id;
     }
 
 }

@@ -3,14 +3,13 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.AdminCardDto;
 import com.example.bankcards.dto.UserCardResponseDto;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.service.CardService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,7 +27,7 @@ public class CardController {
       }
 
     @PreAuthorize("hasRole('ADMIN')")
-    //Read all cards + filter + pagination
+    @Operation(summary="Админ читает все карты. Фильтр по последним 4 символам номера карты, по эмбоссированному на карте имени, по логину, пагинация.")
     @GetMapping(REST_CARD)
     @ResponseStatus(HttpStatus.OK)
     public List<AdminCardDto> getCards(@RequestParam(defaultValue = "0") int page, //page number
@@ -40,7 +39,7 @@ public class CardController {
         return cardService.getCards(page, size, card, owner, login);
     }
 
-    //Card CRUD for admin
+    @Operation(summary="Админ создаёт новую карту")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping(REST_CARD)
     @ResponseStatus(HttpStatus.CREATED)
@@ -50,9 +49,10 @@ public class CardController {
         return cardService.save(card, true);
     }
 
+    @Operation(summary="Админ изменяет карту")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping(REST_CARD+"/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public Card updateCard(@PathVariable long id, @Valid @RequestBody Card card) {
         if (card.getId() == id) {
             log.info("Update card: {}", card);
@@ -63,6 +63,7 @@ public class CardController {
         }
     }
 
+    @Operation(summary="Админ удаляет карту")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(REST_CARD+"/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -72,6 +73,7 @@ public class CardController {
     }
 
 //Card status for admin
+@Operation(summary="Админ получает список заявок на блокировку, разблокировку карт")
 @PreAuthorize("hasRole('ADMIN')")
 @GetMapping(REST_CARD_STATUS)
 @ResponseStatus(HttpStatus.OK)
@@ -79,6 +81,7 @@ public List<Card> getCardsByStatus() {
     return cardService.getMismatchStatusCard();
 }
 
+@Operation(summary="Админ выполняет блокировку, разблокировку карт")
 @PreAuthorize("hasRole('ADMIN')")
 @PutMapping(REST_CARD_STATUS+"/{id}")
 @ResponseStatus(HttpStatus.ACCEPTED)
@@ -90,6 +93,7 @@ public void updateCardStatus(@PathVariable long id, @RequestParam String action)
 //--FOR USER--
 
 //See own cards
+@Operation(summary="Клиент смотрит свои карты + суммарный баланс. Фильтр по последним 4 символам номера карты, пагинация.")
 @GetMapping(REST_CLIENT)
 @ResponseStatus(HttpStatus.OK)
     public UserCardResponseDto getCardsByClient(
@@ -101,6 +105,7 @@ public void updateCardStatus(@PathVariable long id, @RequestParam String action)
 }
 
 //Lock request
+@Operation(summary="Клиент делает заявку на блокировку, разблокировку своей карты.")
 @PutMapping(REST_CLIENT_CARDSTATUS+"/{id}")
 @ResponseStatus(HttpStatus.ACCEPTED)
     public void setClientCardStatus(@PathVariable long id, @RequestParam String action) {
@@ -108,6 +113,7 @@ public void updateCardStatus(@PathVariable long id, @RequestParam String action)
         cardService.clientUpdateCardStatus(id, action);
 }
 //Transfers between own cards
+@Operation(summary="Клиент делает перевод между своими картами")
 @PutMapping(REST_CLIENT_TRANSFER)
 @ResponseStatus(HttpStatus.ACCEPTED)
 public BigDecimal clientMoneyTransfer(@RequestParam Long src, @RequestParam Long dest, @RequestParam BigDecimal amount) {
@@ -116,6 +122,7 @@ public BigDecimal clientMoneyTransfer(@RequestParam Long src, @RequestParam Long
 }
 
 //Replenishment-Debiting of funds
+@Operation(summary="Клиент увеличивает или уменьшает баланс своей карты.")
 @PutMapping(REST_CLIENT_CHANGEBALANCE)
 @ResponseStatus(HttpStatus.ACCEPTED)
 public BigDecimal clientChangeBalance(@RequestParam Long src, @RequestParam BigDecimal amount) {

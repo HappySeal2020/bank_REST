@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -22,13 +23,14 @@ import java.util.UUID;
 public class JwtService {
     private final String ACCESS_SECRET;
     private final String REFRESH_SECRET;
+
     public JwtService(@Value ("${app.crypto.access-secret}") String acc,
                       @Value("${app.crypto.refresh-secret}") String ref){
         this.ACCESS_SECRET = acc;
         this.REFRESH_SECRET = ref;
     }
 
-    private String generateToken(UserDetails user, long expiration, String secret, String type) {
+    public String generateToken(UserDetails user, long expiration, String secret, String type) {
 
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -106,5 +108,18 @@ public class JwtService {
 
     public String extractJti(String token) {
         return getClaims(token, REFRESH_SECRET).get("jti", String.class);
+    }
+
+    public String extractTokenType(String token) {
+        return Optional.ofNullable(extractAllClaims(token).get("type", String.class))
+                .orElse("unknown");
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(ACCESS_SECRET.getBytes(StandardCharsets.UTF_8))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

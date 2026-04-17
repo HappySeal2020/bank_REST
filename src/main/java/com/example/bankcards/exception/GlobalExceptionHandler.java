@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -94,26 +94,35 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponseDto> handleRuntime(RuntimeException ex) {
-
+        log.error(ex.toString());
         ErrorResponseDto error = new ErrorResponseDto(
                 "Bad request",
                 ex.getMessage(),
                 LocalDateTime.now()
         );
-
         return ResponseEntity.badRequest().body(error);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleMissingParams(MissingServletRequestParameterException ex) {
+        log.error( ex.toString());
         return "Missing parameter: " + ex.getParameterName();
     }
 
     @ExceptionHandler(JwtAuthenticationException.class)
     public ResponseEntity<ErrorResponseDto> handleJwt(JwtAuthenticationException ex) {
+        log.error( ex.toString());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponseDto("JWT error", ex.getMessage(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleInvalidFormat(HttpMessageNotReadableException ex) {
+        log.error( ex.toString());
+        return ResponseEntity.badRequest().body(Map.of(
+                "error", "Invalid date format. Use yyyy-MM-dd"
+        ));
     }
 
     @ExceptionHandler(Exception.class)

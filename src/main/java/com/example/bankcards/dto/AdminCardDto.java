@@ -3,10 +3,12 @@ package com.example.bankcards.dto;
 import com.example.bankcards.entity.CardStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.example.bankcards.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Schema(description="Банковская карта для Админ")
 public class AdminCardDto {
     @JsonProperty("id")
     private final long id;

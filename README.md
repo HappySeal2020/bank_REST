@@ -29,7 +29,7 @@ JUnit 5
 
 ## 3. How to run
 git clone git@github.com:HappySeal2020/bank_REST.git  
-cd bank_rest-main  
+cd bank_REST  
 docker compose up -d  
 mvn clean install  
 
