@@ -3,9 +3,9 @@ spring:
     name: bank-rest-main
 
   datasource:
-    url: jdbc:postgresql://localhost:6543/bank-rest-main
+    url: jdbc:postgresql://localhost:5432/bank-rest-main
     username: postgres
-    password: postgre
+    password: postgres
     driver-class-name:  org.postgresql.Driver
 
   jpa:
