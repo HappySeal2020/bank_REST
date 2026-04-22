@@ -1,6 +1,6 @@
 package com.example.bankcards.security;
 
-import com.example.bankcards.service.JwtService;
+import com.example.bankcards.service.JwtServiceImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -23,13 +23,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * JWT authentication filter
+ */
 @Slf4j
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
 
-    public JwtAuthFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
+    public JwtAuthFilter(JwtServiceImpl jwtServiceImpl) {
+        this.jwtServiceImpl = jwtServiceImpl;
     }
 
     @Override
@@ -54,9 +57,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            String username = jwtService.extractUsername(token);
+            String username = jwtServiceImpl.extractUsername(token);
 
-            String tokenType = jwtService.extractTokenType(token);
+            String tokenType = jwtServiceImpl.extractTokenType(token);
             if (!"access".equals(tokenType)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
@@ -64,7 +67,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 List<String> roles = Optional
-                        .ofNullable(jwtService.extractRoles(token))
+                        .ofNullable(jwtServiceImpl.extractRoles(token))
                         .orElse(Collections.emptyList());
 
                 List<GrantedAuthority> authorities = roles.stream()

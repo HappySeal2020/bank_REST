@@ -4,7 +4,7 @@ import com.example.bankcards.entity.Card;
 import com.example.bankcards.entity.Role;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.security.JwtAuthFilter;
-import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.CardServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,7 +40,7 @@ public class CardControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CardService cardService;
+    private CardServiceImpl cardService;
 
     @MockBean
     private JwtAuthFilter jwtAuthFilter;

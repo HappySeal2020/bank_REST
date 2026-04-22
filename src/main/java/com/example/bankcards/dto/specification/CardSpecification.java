@@ -8,6 +8,9 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Specification for cards filter
+ */
 @Slf4j
 public class CardSpecification {
 public static Specification<Card> filter (String cardNum,

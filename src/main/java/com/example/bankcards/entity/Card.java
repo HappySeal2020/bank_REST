@@ -9,13 +9,17 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+/**
+ * Card entity
+ */
 @Data
 @Entity
 
 @Table(name="card")
 @Schema(description="Банковская карта")
-public class Card {
+public class Card extends BaseEntity{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private long id;

@@ -1,10 +1,13 @@
 package com.example.bankcards.service;
+import com.example.bankcards.dto.UserCreateDto;
+import com.example.bankcards.dto.UserResponseDto;
 import com.example.bankcards.entity.*;
 import com.example.bankcards.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,9 +22,9 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest {
+public class UserServiceImplTest {
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @Mock
     private UserRepository userRepository;
@@ -29,31 +32,35 @@ public class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Spy
+    private UserMapper userMapper = new UserMapper();
+
+    //@Spy
+    //private PasswordEncoder passwordEncoder;
+
     @Test
-    void shouldSaveUser() {
-        User user = new User();
-        user.setId(1L);
+    void shouldCreateUser() {
+
+        UserCreateDto user = new UserCreateDto();
         user.setPassword("1234");
         user.setLogin("Pierre");
         user.setRole(Role.USER);
         when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-        User userSaved = userService.save(user);
+        UserResponseDto userSaved = userServiceImpl.create(user);
         assertNotNull(userSaved);
-        assertEquals(user.getId(), userSaved.getId());
-        assertEquals(user.getPassword(), userSaved.getPassword());
         assertEquals(user.getLogin(), userSaved.getLogin());
         assertEquals(user.getRole(), userSaved.getRole());
     }
 
     @Test
     void shouldEncodePasswordBeforeSaving() {
-        User user = new User();
+        UserCreateDto user = new UserCreateDto();
         user.setPassword("123456");
         when(passwordEncoder.encode("123456"))
                 .thenReturn("encoded_password");
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-        User saved = userService.save(user);
+        UserResponseDto saved = userServiceImpl.create(user);
         assertEquals("encoded_password", saved.getPassword());
         verify(passwordEncoder).encode("123456");
         assertNotEquals("123456", saved.getPassword());
@@ -70,7 +77,7 @@ public class UserServiceTest {
 
         when(userRepository.findAll(any(Pageable.class)))
                 .thenReturn(page);
-        List <User> response=userService.getAllUsers(0, 5, null);
+        List <User> response= userServiceImpl.getAllUsers(0, 5, null);
 
         assertEquals(1, response.size());
         assertEquals("Pierre", response.get(0).getLogin());
@@ -89,7 +96,7 @@ public class UserServiceTest {
                 any(Pageable.class)
         )).thenReturn(page);
 
-        List<User> response = userService.getAllUsers(0, 5, "Pier");
+        List<User> response = userServiceImpl.getAllUsers(0, 5, "Pier");
 
         assertEquals(1, response.size());
         assertEquals("Pierre", response.get(0).getLogin());
@@ -99,7 +106,7 @@ public class UserServiceTest {
     void shouldGetAllUsers() {
         Long id = 1L;
         doNothing().when(userRepository).deleteById(id);
-        userService.deleteById(id);
+        userServiceImpl.deleteById(id);
         verify(userRepository,times(1)).deleteById(id);
     }
 

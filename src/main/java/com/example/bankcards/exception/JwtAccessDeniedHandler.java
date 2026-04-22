@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+/**
+ * Error handler for JWT errors
+ */
 @Component
 public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 

@@ -7,6 +7,11 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
+import java.time.LocalDateTime;
+
+/**
+ * User entity
+ */
 @Table(name = "user_tbl")
 @Getter
 @Setter
@@ -17,7 +22,7 @@ import org.hibernate.validator.constraints.Length;
 @ToString
 
 @Schema(description="Пользователь системы")
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -32,7 +37,6 @@ public class User {
 
     @Enumerated(value = EnumType.STRING)
     private Role role;
-
 
 }
 

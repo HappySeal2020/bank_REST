@@ -3,7 +3,7 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.AuthRequestDto;
 import com.example.bankcards.dto.AuthResponseDto;
 import com.example.bankcards.exception.JwtAuthenticationException;
-import com.example.bankcards.service.JwtService;
+import com.example.bankcards.service.JwtServiceImpl;
 import com.example.bankcards.security.RefreshTokenStore;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
@@ -24,21 +24,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static com.example.bankcards.util.Const.*;
 
+/**
+ * Controller for authentication
+ */
 @Slf4j
 @RestController
 @RequestMapping(AUTH_PATH)
 public class AuthController {
     private final AuthenticationManager authManager;
-    private final JwtService jwtService;
+    private final JwtServiceImpl jwtServiceImpl;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenStore refreshTokenStore;
 
     public AuthController(AuthenticationManager authManager,
-                          JwtService jwtService,
+                          JwtServiceImpl jwtServiceImpl,
                           UserDetailsService userDetailsService,
                           RefreshTokenStore refreshTokenStore) {
         this.authManager = authManager;
-        this.jwtService = jwtService;
+        this.jwtServiceImpl = jwtServiceImpl;
         this.userDetailsService = userDetailsService;
         this.refreshTokenStore = refreshTokenStore;
     }
@@ -54,9 +57,9 @@ public class AuthController {
                 )
         );
         UserDetails user = userDetailsService.loadUserByUsername(request.getLogin());
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-        String jti = jwtService.extractJti(refreshToken);
+        String accessToken = jwtServiceImpl.generateAccessToken(user);
+        String refreshToken = jwtServiceImpl.generateRefreshToken(user);
+        String jti = jwtServiceImpl.extractJti(refreshToken);
         refreshTokenStore.save(user.getUsername(),jti);
         ResponseCookie accessCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
@@ -90,12 +93,12 @@ public class AuthController {
             throw new RuntimeException("Refresh token not found");
         }
 
-        if (!jwtService.isRefreshToken(refreshToken)) {
+        if (!jwtServiceImpl.isRefreshToken(refreshToken)) {
             throw new RuntimeException("Invalid refresh token");
         }
 
-        String username = jwtService.extractUsername(refreshToken);
-        String jti = jwtService.extractJti(refreshToken);
+        String username = jwtServiceImpl.extractUsername(refreshToken);
+        String jti = jwtServiceImpl.extractJti(refreshToken);
 
         // проверка rotation
         if (!refreshTokenStore.isValid(username, jti)) {
@@ -105,11 +108,11 @@ public class AuthController {
         UserDetails user = userDetailsService.loadUserByUsername(username);
 
         // генерируем НОВЫЕ токены
-        String newAccessToken = jwtService.generateAccessToken(user);
-        String newRefreshToken = jwtService.generateRefreshToken(user);
+        String newAccessToken = jwtServiceImpl.generateAccessToken(user);
+        String newRefreshToken = jwtServiceImpl.generateRefreshToken(user);
 
         // сохраняем новый jti (старый становится невалидным)
-        String newJti = jwtService.extractJti(newRefreshToken);
+        String newJti = jwtServiceImpl.extractJti(newRefreshToken);
         refreshTokenStore.save(username, newJti);
 
         // 🔥 кладём новые cookie

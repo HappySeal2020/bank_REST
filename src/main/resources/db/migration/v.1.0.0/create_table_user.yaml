@@ -28,3 +28,14 @@ databaseChangeLog:
                 type: varchar(10)
                 constraints:
                   nullable: false
+            - column:
+                name: created_at
+                type: date
+                constraints:
+                  nullable: true
+            - column:
+                name: updated_at
+                type: date
+                constraints:
+                  nullable: true
+

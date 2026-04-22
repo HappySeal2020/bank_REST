@@ -2,22 +2,25 @@ package com.example.bankcards.entity;
 
 import com.example.bankcards.dto.AdminCardDto;
 import com.example.bankcards.dto.UserCardDto;
-import com.example.bankcards.service.AesService;
+import com.example.bankcards.service.AesServiceImpl;
 import com.example.bankcards.service.MaskingService;
 import org.springframework.stereotype.Component;
 
+/**
+ * Converts Card for Admin and User
+ */
 @Component
 public class CardMapper {
     private final MaskingService maskingService;
-    private final AesService aesService;
+    private final AesServiceImpl aesServiceImpl;
 
-    public CardMapper(MaskingService maskingService, AesService aesService) {
+    public CardMapper(MaskingService maskingService, AesServiceImpl aesServiceImpl) {
         this.maskingService = maskingService;
-        this.aesService = aesService;
+        this.aesServiceImpl = aesServiceImpl;
     }
     public AdminCardDto toDto(Card card) {
         String encrypted = card.getCardNum();
-        String decrypted = aesService.decrypt(encrypted);
+        String decrypted = aesServiceImpl.decrypt(encrypted);
         String masked = maskingService.maskCardNumber(decrypted);
         return new AdminCardDto(card.getId(),
                 card.getUser(),
@@ -32,7 +35,7 @@ public class CardMapper {
 
     public UserCardDto toUserCardDto (Card card) {
         String encrypted = card.getCardNum();
-        String decrypted = aesService.decrypt(encrypted);
+        String decrypted = aesServiceImpl.decrypt(encrypted);
         String masked = maskingService.maskCardNumber(decrypted);
         return new UserCardDto(card.getId(),
                 masked,

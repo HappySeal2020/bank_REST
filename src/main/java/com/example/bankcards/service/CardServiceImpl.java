@@ -11,6 +11,7 @@ import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.NotFoundException;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.service.impl.CardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,18 +27,21 @@ import java.math.BigDecimal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
+/**
+ * Service for managing cards
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 
-public class CardService {
+public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserRepository userRepository;
     private final CardMapper cardMapper;
-    private final AesService aesService;
-    //private final MaskingService maskingService;
+    private final AesServiceImpl aesServiceImpl;
 
+    @Override
     //READ
     public Card getById(Long id) {
         return cardRepository.findById(id)
@@ -45,6 +49,7 @@ public class CardService {
                         new NotFoundException("Card not found id=" + id));
     }
 
+    @Override
     public Card getOwnCardById(Long id){
         String username=getUsername();
         log.info("getOwnCardById: username={}, card id={}",username, id);
@@ -52,7 +57,8 @@ public class CardService {
                 .orElseThrow(() -> new NotFoundException("Card not found id=" + id));
     }
 
-     public List<AdminCardDto> getCards(int page, int size, String card, String owner, String login) {
+    @Override
+    public List<AdminCardDto> getCards(int page, int size, String card, String owner, String login) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id"));
         Page<Card>cardsPage;
         if ((card != null && !card.isBlank()) ||
@@ -66,7 +72,7 @@ public class CardService {
     }
 
     //Clients
-
+    @Override
     public UserCardResponseDto getUserCard(int page, int size, String card) {
         String login = getUsername();
         log.info("Try to get user cards for login {} - page {}, page size {}, card {}", login, page, size, card);
@@ -86,6 +92,7 @@ public class CardService {
     }
 
     //Money transfer between own cards
+    @Override
     @Transactional
     public BigDecimal clientMoneyTransfer(Long src, Long dest, BigDecimal amount){
         if(amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -109,6 +116,7 @@ public class CardService {
 
 
     //Replenishment-Debiting of funds
+    @Override
     @Transactional
     public BigDecimal clientChangeBalance(Long src, BigDecimal amount){
         Card srcCard = getOwnCardById(src);
@@ -122,7 +130,7 @@ public class CardService {
     }
 
     //Client Lock/UnLock requests
-
+    @Override
     @Transactional
     public void clientUpdateCardStatus (long id, String action) {
         log.info("Call getOwnCardById id={}", id);
@@ -155,10 +163,8 @@ public class CardService {
 
 
 
-
-
-
     //-----ADMIN ------- CREATE card
+    @Override
     @Transactional
     public Card save(Card card, boolean doEncrypt) {
         if (card.getUser() != null && userRepository.findById(card.getUser().getId()).isPresent()) {
@@ -169,7 +175,7 @@ public class CardService {
             if (doEncrypt) {
                 card.setCardNum4(card.getCardNum().substring(card.getCardNum().length() - 4));
                 String cardNum=card.getCardNum();
-                card.setCardNum(aesService.encrypt(cardNum));
+                card.setCardNum(aesServiceImpl.encrypt(cardNum));
             }
             log.info("Save card: {}", card);
             return cardRepository.save(card);
@@ -179,18 +185,20 @@ public class CardService {
     }
 
     //DELETE
+    @Override
     @Transactional
     public void delete(long id) {
         cardRepository.deleteById(id);
     }
 
     //Get cards with mismatch status
+    @Override
     public List<Card> getMismatchStatusCard() {
         return cardRepository.findMismatched();
     }
 
 
-
+    @Override
     @Transactional
     public void adminUpdateCardStatus(long id, String action) {
         Card card = getById(id);

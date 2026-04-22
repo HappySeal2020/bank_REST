@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @AllArgsConstructor
-
+/**
+ * Service for get Spring Security user by username
+ */
 public class AuthService implements UserDetailsService {
     private final UserRepository userRepository;
 

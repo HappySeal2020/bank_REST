@@ -1,5 +1,6 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.service.impl.AesService;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -11,13 +12,16 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * Service for encrypt and decrypt message
+ */
 @Service
-public class AesService {
+public class AesServiceImpl implements AesService {
     private final SecretKey secretKey;
     private final Cipher cipher;
     private static final String AES_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final int IV_SIZE = 16; // 128 bit
-    public AesService(@Value("${app.crypto.secret-key}") String base64Key) {
+    public AesServiceImpl(@Value("${app.crypto.secret-key}") String base64Key) {
         // Ключ передаётся в конфигурации (например, application.properties)
         byte[] decodedKey = Base64.getDecoder().decode(base64Key);
         this.secretKey = new SecretKeySpec(decodedKey, "AES");
@@ -27,6 +31,7 @@ public class AesService {
             throw new RuntimeException("Failed to initialize cipher", e);
         }
     }
+    @Override
     public String encrypt(String plainText) {
         try {
             // Генерируем случайный инициализационный вектор (IV)
@@ -45,6 +50,7 @@ public class AesService {
             throw new RuntimeException("Encryption failed", e);
         }
     }
+    @Override
     public String decrypt(String encryptedBase64) {
         try {
             byte[] combined = Base64.getDecoder().decode(encryptedBase64);

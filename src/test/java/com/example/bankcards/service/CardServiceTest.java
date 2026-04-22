@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CardServiceTest {
     @InjectMocks
-    private CardService cardService;
+    private CardServiceImpl cardService;
 
     @Mock
     private CardRepository cardRepository;
@@ -49,7 +49,7 @@ public class CardServiceTest {
     private CardMapper cardMapper;
 
     @Mock
-    private AesService aesService;
+    private AesServiceImpl aesServiceImpl;
 
     //запрос на блокировку карты
     @Test
@@ -500,7 +500,7 @@ public class CardServiceTest {
         when(cardRepository.getTotalBalance(login))
                 .thenReturn(BigDecimal.valueOf(1000));
 
-        CardService spyService = Mockito.spy(cardService);
+        CardServiceImpl spyService = Mockito.spy(cardService);
         doReturn(login).when(spyService).getUsername();
 
         UserCardResponseDto response =
@@ -532,7 +532,7 @@ public class CardServiceTest {
         when(cardRepository.getTotalBalance(login))
                 .thenReturn(null);
 
-        CardService spyService = Mockito.spy(cardService);
+        CardServiceImpl spyService = Mockito.spy(cardService);
         doReturn(login).when(spyService).getUsername();
 
         UserCardResponseDto response =
@@ -564,7 +564,7 @@ public class CardServiceTest {
         when(cardRepository.getTotalBalance(login))
                 .thenReturn(null);
 
-        CardService spyService = Mockito.spy(cardService);
+        CardServiceImpl spyService = Mockito.spy(cardService);
         doReturn(login).when(spyService).getUsername();
 
         UserCardResponseDto response =
@@ -591,7 +591,7 @@ public class CardServiceTest {
         card.setUser(user);
         when (cardRepository.save(any(Card.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(userRepository.findById(any())).thenReturn(Optional.of(user));
-        when(aesService.encrypt(anyString()))
+        when(aesServiceImpl.encrypt(anyString()))
                 .thenReturn("ENCRYPTED_VALUE_12345678901234567890");
         Card savedCard=cardService.save(card,true);
         assertEquals("6789", savedCard.getCardNum4());

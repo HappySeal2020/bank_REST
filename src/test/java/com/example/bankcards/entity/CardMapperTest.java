@@ -1,7 +1,7 @@
 package com.example.bankcards.entity;
 
 import com.example.bankcards.dto.UserCardDto;
-import com.example.bankcards.service.AesService;
+import com.example.bankcards.service.AesServiceImpl;
 import com.example.bankcards.service.MaskingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +18,7 @@ public class CardMapperTest {
     private MaskingService maskingService;
 
     @Mock
-    private AesService aesService;
+    private AesServiceImpl aesServiceImpl;
 
     @InjectMocks
     private CardMapper cardMapper;
@@ -27,7 +27,7 @@ public class CardMapperTest {
     void shouldMapAndMaskCardNumber() {
         Card card = new Card();
         card.setCardNum("encrypted");
-        when(aesService.decrypt("encrypted"))
+        when(aesServiceImpl.decrypt("encrypted"))
                 .thenReturn("1234567812345678");
         when(maskingService.maskCardNumber("1234567812345678"))
                 .thenReturn("************5678");

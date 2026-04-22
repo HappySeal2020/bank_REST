@@ -1,6 +1,6 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.service.JwtService;
+import com.example.bankcards.service.JwtServiceImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ControllerIntegrationTest {
     @Autowired
-    private JwtService jwtService;
+    private JwtServiceImpl jwtServiceImpl;
 
     @Autowired
     private MockMvc mockMvc;
@@ -46,7 +46,7 @@ public class ControllerIntegrationTest {
     @Test
     void shouldReturnCardsForAdmin() throws Exception {
         UserDetails user = userDetailsService.loadUserByUsername("admin");
-        String token = jwtService.generateAccessToken(user);
+        String token = jwtServiceImpl.generateAccessToken(user);
         log.info("User={}, Token={}", user, token);
         mockMvc.perform(get(REST_MAP+REST_CARD)
                         .header("Authorization", "Bearer " + token))
@@ -56,7 +56,7 @@ public class ControllerIntegrationTest {
     @Test
     void shouldReturn403ForUser() throws Exception {
         UserDetails user = userDetailsService.loadUserByUsername("olga");
-        String token = jwtService.generateAccessToken(user);
+        String token = jwtServiceImpl.generateAccessToken(user);
         mockMvc.perform(get(REST_MAP+REST_CARD)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isForbidden());
@@ -66,7 +66,7 @@ public class ControllerIntegrationTest {
     @Test
     void userShouldAccessUserEndpoint() throws Exception {
         UserDetails user = userDetailsService.loadUserByUsername("olga");
-        String token = jwtService.generateAccessToken(user);
+        String token = jwtServiceImpl.generateAccessToken(user);
         mockMvc.perform(get(REST_MAP+REST_CLIENT)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk());
@@ -89,7 +89,7 @@ public class ControllerIntegrationTest {
     @Test
     void shouldReturn401ForExpiredToken() throws Exception {
         UserDetails user = userDetailsService.loadUserByUsername("admin");
-        String expiredToken = jwtService.generateToken(
+        String expiredToken = jwtServiceImpl.generateToken(
                 user,
                 -1000, // уже истёк
                 ACCESS_SECRET,
@@ -104,7 +104,7 @@ public class ControllerIntegrationTest {
     @Test
     void shouldRejectRefreshTokenForProtectedEndpoint() throws Exception {
         UserDetails user = userDetailsService.loadUserByUsername("admin");
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String refreshToken = jwtServiceImpl.generateRefreshToken(user);
         mockMvc.perform(get(REST_MAP + REST_CARD)
                         .header("Authorization", "Bearer " + refreshToken))
                 .andExpect(status().isUnauthorized());

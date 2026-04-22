@@ -6,6 +6,10 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
+
+/**
+ * DTO gives cards + total balance to user
+ */
 @Data
 @Schema(description="Банковская карта для клиента + суммарный баланс по всем картам")
 public class UserCardResponseDto {

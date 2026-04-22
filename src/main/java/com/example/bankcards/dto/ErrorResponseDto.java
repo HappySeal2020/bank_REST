@@ -1,9 +1,10 @@
 package com.example.bankcards.dto;
-
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
+/**
+ * DTO for error response
+ */
 @Data
 public class ErrorResponseDto {
     public ErrorResponseDto(String errorCode, String errorMessage, LocalDateTime timestamp) {

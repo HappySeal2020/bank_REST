@@ -1,9 +1,11 @@
 package com.example.bankcards.controller;
 
+import com.example.bankcards.dto.UserCreateDto;
+import com.example.bankcards.dto.UserResponseDto;
+import com.example.bankcards.dto.UserUpdateDto;
 import com.example.bankcards.entity.Role;
-import com.example.bankcards.entity.User;
-import com.example.bankcards.service.JwtService;
-import com.example.bankcards.service.UserService;
+import com.example.bankcards.service.JwtServiceImpl;
+import com.example.bankcards.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -12,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.hamcrest.Matchers.containsString;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -35,30 +37,35 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
 
     @MockBean
-    private JwtService jwtService;
+    private JwtServiceImpl jwtServiceImpl;
 
     @Test
     void shouldViewUser() throws Exception {
-        when(userService.getAllUsers(0, 5, null))
+        when(userServiceImpl.getAllUsers(0, 5, null))
                 .thenReturn(List.of());
         mockMvc.perform(get(REST_MAP+REST_USER))
                 .andExpect(status().isOk());
-        verify(userService).getAllUsers(0, 5, null);
+        verify(userServiceImpl).getAllUsers(0, 5, null);
     }
 
-    //успешное изменение пользователя
+    //успешное создание пользователя
     @Test
     void shouldCreateUser() throws Exception {
-        User user = new User();
-        user.setId(1);
-        user.setLogin("john_login");
-        user.setRole(Role.USER);
-        user.setPassword("{noop}123456");
-        when(userService.save(any(User.class)))
-                .thenReturn(user);
+        UserCreateDto userCreateDto = new UserCreateDto();
+        userCreateDto.setLogin("test_login");
+        userCreateDto.setPassword("password");
+        userCreateDto.setRole(Role.USER);
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setLogin("test_login");
+        userResponseDto.setPassword("password");
+        userResponseDto.setRole(Role.USER);
+        userResponseDto.setId(1L);
+
+        when(userServiceImpl.create(any(UserCreateDto.class)))
+                .thenReturn(userResponseDto);
 
         mockMvc.perform(post(REST_MAP+REST_USER)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,65 +79,45 @@ public class UserControllerTest {
             """))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.login").value("john_login"));
+                .andExpect(jsonPath("$.login").value("test_login"));
 
 
     }
     //успешное изменение пользователя
     @Test
     void shouldUpdateUser() throws Exception {
-        User user = new User();
-        user.setId(1);
+        UserUpdateDto user = new UserUpdateDto();
         user.setLogin("john_login");
         user.setRole(Role.USER);
         user.setPassword("{noop}123456");
-        when(userService.save(any(User.class)))
-                .thenReturn(user);
+        UserResponseDto userResponseDto = new UserResponseDto();
+        userResponseDto.setLogin("test_login");
+        userResponseDto.setPassword("password");
+        userResponseDto.setRole(Role.USER);
+        userResponseDto.setId(1L);
+        when(userServiceImpl.update(any(Long.class),any(UserUpdateDto.class)))
+                .thenReturn(userResponseDto);
 
         mockMvc.perform(put(REST_MAP+REST_USER+"/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                 {
                              "id": 1,
-                             "login": "john_login",
+                             "login": "test_login",
                              "password": "123456",
                              "role": "USER"
                 }
             """))
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.login").value("john_login"));
-    }
-
-    //изменение пользователя - несоответствие id
-    @Test
-    void shouldThrowBadIdUpdateUser() throws Exception {
-        User user = new User();
-        user.setId(1);
-        user.setLogin("john_login");
-        user.setRole(Role.USER);
-        user.setPassword("{noop}123456");
-        when(userService.save(any(User.class)))
-                .thenReturn(user);
-        mockMvc.perform(put(REST_MAP+REST_USER+"/2")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                {
-                             "id": 1,
-                             "login": "john_login",
-                             "password": "123456",
-                             "role": "USER"
-                }
-            """))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(containsString("Incorrect id")));
+                .andExpect(jsonPath("$.login").value("test_login"));
     }
 
     //удаление пользователя
     @Test
     void shouldDeleteUser() throws Exception {
         Long id = 1L;
-        when(userService.deleteById(any(Long.class)))
+        when(userServiceImpl.deleteById(any(Long.class)))
                 .thenReturn(id);
         mockMvc.perform(delete(REST_MAP+REST_USER+"/1"))
                 .andExpect(status().isNoContent());

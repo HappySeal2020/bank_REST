@@ -3,7 +3,7 @@ package com.example.bankcards.controller;
 import com.example.bankcards.dto.AdminCardDto;
 import com.example.bankcards.dto.UserCardResponseDto;
 import com.example.bankcards.entity.Card;
-import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.CardServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +16,16 @@ import java.util.List;
 
 import static com.example.bankcards.util.Const.*;
 
+/**
+ * Controller for operations with cards
+ */
 @Slf4j
 @RestController
 @RequestMapping(REST_MAP)
 public class CardController {
-    private final CardService cardService;
+    private final CardServiceImpl cardService;
 
-    public CardController(CardService cardService) {
+    public CardController(CardServiceImpl cardService) {
         this.cardService = cardService;
       }
 

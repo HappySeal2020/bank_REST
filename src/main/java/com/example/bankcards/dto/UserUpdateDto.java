@@ -1,12 +1,12 @@
 package com.example.bankcards.dto;
 
+import com.example.bankcards.entity.Role;
 import lombok.Data;
 
-/**
- * DTO for authentication request
- */
 @Data
-public class AuthRequestDto {
+public class UserUpdateDto {
     private String login;
     private String password;
+    private Role role;
 }
+

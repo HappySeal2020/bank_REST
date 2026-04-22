@@ -1,7 +1,7 @@
-login;password;role
-admin;{bcrypt}$2a$10$lFOU5x1rqy57frIcCTgHUO340ryQJ894c8lYRu2pPfuo1vtaezI1.;ADMIN
-master;{bcrypt}$2a$10$uWcBh5N8mgGO0lU1zrSubODt3sSEEnxFuA5DZJ3VbHNnX4lfy2O9m;ADMIN
-tatyana;{bcrypt}$2a$10$SDpITECRDng7IstFfg3mr.6Z9zyZpNBkSrkdVO00Efv2vCraPr0RO;USER
-olga;{bcrypt}$2a$10$FWR83rGcWNJn2TjRqjvhnOVx9Ap3yk6tz5mNnPsgsnm8gDkCK/rCy;USER
-nikolay;{bcrypt}$2a$10$egIAVDEA.8K9XnNdjHo4lO9lICRt7JtmoqNgt2LIFyd1W5.WRIq9G;USER
-julia;{bcrypt}$2a$10$Q8Y1KoxMjqF862VnCD31zOapeisARSMfPBFnn.8EXB6RFaAjw0/Ju;USER
+login;password;role;created_at;updated_at
+admin;{bcrypt}$2a$10$lFOU5x1rqy57frIcCTgHUO340ryQJ894c8lYRu2pPfuo1vtaezI1.;ADMIN;2026-04-22;2026-04-22
+master;{bcrypt}$2a$10$uWcBh5N8mgGO0lU1zrSubODt3sSEEnxFuA5DZJ3VbHNnX4lfy2O9m;ADMIN;2026-04-22;2026-04-22
+tatyana;{bcrypt}$2a$10$SDpITECRDng7IstFfg3mr.6Z9zyZpNBkSrkdVO00Efv2vCraPr0RO;USER;2026-04-22;2026-04-22
+olga;{bcrypt}$2a$10$FWR83rGcWNJn2TjRqjvhnOVx9Ap3yk6tz5mNnPsgsnm8gDkCK/rCy;USER;2026-04-22;2026-04-22
+nikolay;{bcrypt}$2a$10$egIAVDEA.8K9XnNdjHo4lO9lICRt7JtmoqNgt2LIFyd1W5.WRIq9G;USER;2026-04-22;2026-04-22
+julia;{bcrypt}$2a$10$Q8Y1KoxMjqF862VnCD31zOapeisARSMfPBFnn.8EXB6RFaAjw0/Ju;USER;2026-04-22;2026-04-22

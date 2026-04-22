@@ -1,4 +1,7 @@
 databaseChangeLog:
+  - preConditions:
+      type: postgresql
+      onFail: WARN
   - changeSet:
       id: add-tag-1.0.0
       author: Zdanovskih

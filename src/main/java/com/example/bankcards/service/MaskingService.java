@@ -2,8 +2,10 @@ package com.example.bankcards.service;
 
 import org.springframework.stereotype.Service;
 
+/**
+ * Service for masking card number
+ */
 @Service
-
 public class MaskingService {
     public String maskCardNumber(String rawNumber) {
         return rawNumber.substring(0,rawNumber.length()-4).replaceAll("[0-9]","*")

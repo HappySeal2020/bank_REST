@@ -7,6 +7,9 @@ import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Specification for users filter
+ */
 @Slf4j
 public class UserSpecification {
     public static Specification<User> filter(String name) {

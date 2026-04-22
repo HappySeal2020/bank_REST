@@ -1,5 +1,6 @@
 package com.example.bankcards.service;
 
+import com.example.bankcards.service.impl.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -18,14 +19,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service for managing JWT
+ */
 @Slf4j
 @Service
-public class JwtService {
+public class JwtServiceImpl implements JwtService {
     private final String ACCESS_SECRET;
     private final String REFRESH_SECRET;
 
-    public JwtService(@Value ("${app.crypto.access-secret}") String acc,
-                      @Value("${app.crypto.refresh-secret}") String ref){
+    public JwtServiceImpl(@Value ("${app.crypto.access-secret}") String acc,
+                          @Value("${app.crypto.refresh-secret}") String ref){
         this.ACCESS_SECRET = acc;
         this.REFRESH_SECRET = ref;
     }
@@ -46,15 +50,19 @@ public class JwtService {
                 .signWith(getSignKey(secret), SignatureAlgorithm.HS256)
                 .compact();
     }
+
+    @Override
     public String generateAccessToken(UserDetails user) {
         return generateToken(user, 1000 * 60 * 15, ACCESS_SECRET, "access"); // 15 мин
     }
 
+    @Override
     public String generateRefreshToken(UserDetails user) {
         return generateToken(user, 1000L * 60 * 60 * 24 * 7, REFRESH_SECRET,"refresh"); // 7 дней
     }
 
 
+    @Override
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }
@@ -77,6 +85,7 @@ public class JwtService {
         }
     }
 
+    @Override
     public boolean isRefreshToken(String token) {
         try {
             Claims claims = getClaims(token, REFRESH_SECRET);
@@ -101,15 +110,18 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+    @Override
     public List<String> extractRoles(String token) {
         Claims claims = getClaims(token);
         return claims.get("roles", List.class);
     }
 
+    @Override
     public String extractJti(String token) {
         return getClaims(token, REFRESH_SECRET).get("jti", String.class);
     }
 
+    @Override
     public String extractTokenType(String token) {
         return Optional.ofNullable(extractAllClaims(token).get("type", String.class))
                 .orElse("unknown");

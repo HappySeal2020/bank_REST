@@ -2,6 +2,9 @@ package com.example.bankcards.dto;
 
 import lombok.Data;
 
+/**
+ * DTO for authentication response
+ */
 @Data
 public class AuthResponseDto {
     private String accessToken;

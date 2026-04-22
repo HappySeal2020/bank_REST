@@ -16,11 +16,18 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Global exception handler
+ */
 @Slf4j
 @RestControllerAdvice
 
 public class GlobalExceptionHandler {
+    /**
+     * Validation errors
+     * @param ex exception
+     * @return description of validation errors
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -32,6 +39,13 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
     }
+
+    /**
+     * Not found errors - logic errors: client gives card number, but he doesn't own this card;
+     * client wants to lock card, but it already locked, etc
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> handleNotFoundException(NotFoundException ex) {
         String msg="Data not found";
@@ -41,7 +55,11 @@ public class GlobalExceptionHandler {
                 .body(msg);
     }
 
-
+    /**
+     * Database errors
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleConstraint(DataIntegrityViolationException ex) {
         String msg = ex.getMostSpecificCause().getMessage();
@@ -57,6 +75,11 @@ public class GlobalExceptionHandler {
                 .body("Data integrity error");
     }
 
+    /**
+     * Validation errors
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<?> handleTransactionException(TransactionSystemException ex) {
         Throwable cause = ex.getRootCause();
@@ -77,6 +100,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Cannot save data");
     }
+    /**
+     * Validation errors
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(jakarta.validation.ConstraintViolationException.class)
     public ResponseEntity<?> handleJpaValidation(jakarta.validation.ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -102,7 +130,11 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.badRequest().body(error);
     }
-
+    /**
+     * Wrong params errors
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleMissingParams(MissingServletRequestParameterException ex) {
@@ -110,6 +142,11 @@ public class GlobalExceptionHandler {
         return "Missing parameter: " + ex.getParameterName();
     }
 
+    /**
+     * JWT errors
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(JwtAuthenticationException.class)
     public ResponseEntity<ErrorResponseDto> handleJwt(JwtAuthenticationException ex) {
         log.error( ex.toString());
@@ -117,6 +154,11 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponseDto("JWT error", ex.getMessage(), LocalDateTime.now()));
     }
 
+    /**
+     * Wrong date format error
+     * @param ex exception
+     * @return description of exception
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<?> handleInvalidFormat(HttpMessageNotReadableException ex) {
         log.error( ex.toString());
@@ -125,6 +167,11 @@ public class GlobalExceptionHandler {
         ));
     }
 
+    /**
+     * All other exceptions
+     * @param exception exception
+     * @return description of exception
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception exception) {
         log.error("Unexpected error: {}", exception.getMessage());

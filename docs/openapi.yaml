@@ -23,7 +23,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/UserUpdateDto"
         required: true
       responses:
         "202":
@@ -31,7 +31,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserResponseDto"
     delete:
       tags:
       - user-controller
@@ -257,12 +257,12 @@ paths:
       tags:
       - user-controller
       summary: Админ создаёт пользователя.
-      operationId: addUser
+      operationId: createUser
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              $ref: "#/components/schemas/UserCreateDto"
         required: true
       responses:
         "201":
@@ -270,7 +270,7 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserResponseDto"
   /api-1.0/cards:
     get:
       tags:
@@ -386,12 +386,28 @@ paths:
                   $ref: "#/components/schemas/Card"
 components:
   schemas:
-    User:
-      required:
-      - login
-      - password
+    UserUpdateDto:
       type: object
       properties:
+        login:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          description: Роль пользователя системы
+          enum:
+          - ADMIN
+          - USER
+    UserResponseDto:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         id:
           type: integer
           format: int64
@@ -405,7 +421,7 @@ components:
           enum:
           - ADMIN
           - USER
-      description: Пользователь системы
+      description: Пользователь
     Card:
       required:
       - cardNum
@@ -413,6 +429,12 @@ components:
       - validThru
       type: object
       properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
         id:
           type: integer
           format: int64
@@ -446,6 +468,32 @@ components:
         balance:
           type: number
       description: Банковская карта
+    User:
+      required:
+      - login
+      - password
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        id:
+          type: integer
+          format: int64
+        login:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          description: Роль пользователя системы
+          enum:
+          - ADMIN
+          - USER
+      description: Пользователь системы
     AuthResponseDto:
       type: object
       properties:
@@ -460,6 +508,19 @@ components:
           type: string
         password:
           type: string
+    UserCreateDto:
+      type: object
+      properties:
+        login:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          description: Роль пользователя системы
+          enum:
+          - ADMIN
+          - USER
     UserCardDto:
       type: object
       properties:
