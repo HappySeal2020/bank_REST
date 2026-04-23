@@ -30,9 +30,26 @@ JUnit 5
 ## 3. How to run
 git clone git@github.com:HappySeal2020/bank_REST.git  
 cd bank_REST  
+(if first time)  
+docker compose up --build  
+(if not first time)  
 docker compose up -d  
-mvn clean install  
+to stop: docker compose down
 
+to stop only Application container:  
+docker container stop bank-app
+
+Manual run in Intellij Idea (Application container must be stopped and DB container - started):  
+-open project in Idea  
+-Run -> Edit Configuration -> Active profiles = dev  
+-or Program arguments: --spring.profiles.active=dev  
+
+Run without docker:  
+mvn spring-boot:run  
+mvn spring-boot:run -Dspring-boot.run.profiles=dev  
+
+Run via docker:  
+docker run -e SPRING_PROFILES_ACTIVE=dev -p 8080:8080 bankcards-app
 ## 4. Services
 application http://localhost:8080  
 Postgres localhost:5432
